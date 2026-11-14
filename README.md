@@ -1,31 +1,27 @@
 
-# Taller evaluativo: Refactorización de arquitectura y pruebas asíncronas en FastAPI
-
-## 1. Diagnóstico técnico del código original
+### 1. Diagnóstico técnico del código original
 
 ### A. Identificación de los principios SOLID
 
-**Principio de responsabilidad única (SRP)**
+  Principio de responsabilidad única
 
-Se incumple en la clase `NotificationDispatcher` del archivo `services/notification_core.py`, porque maneja diferentes canales de notificación dentro de una misma clase.
+Se incumple en la clase `NotificationDispatcher` del archivo `services/notification_core.py`, porque maneja diferentes canales de notificación dentro de una misma clase. 
 
 También se incumple en el método `process_checkout` de `routers/checkout.py`, porque realiza la gestión del inventario, los pagos, la generación de documentos y el envío de notificaciones.
 
-**Principio abierto/cerrado (OCP)**
+  Principio abierto/cerrado 
 
 Se incumple en `NotificationDispatcher`, porque utiliza condiciones `if`, `elif` y `else` para seleccionar los canales de notificación. Para agregar un nuevo canal es necesario modificar la clase existente.
 
-**Principio de sustitución de Liskov (LSP)**
+  Principio de sustitución de Liskov 
 
 El código original no define contratos abstractos para los servicios, por lo que no establece cómo deben comportarse sus diferentes implementaciones. Esto dificulta sustituir una implementación por otra manteniendo un comportamiento esperado.
 
 No se identifica una violación clásica de una subclase concreta, pero sí una deficiencia en el diseño de contratos.
-
-**Principio de segregación de interfaces (ISP)**
-
+  Principio de segregación de interfaces 
 El código original no utiliza interfaces independientes para separar las operaciones de inventario, pagos, pedidos y notificaciones. Esto genera dependencias directas entre componentes que deberían estar separados.
 
-**Principio de inversión de dependencias (DIP)**
+  Principio de inversión de dependencias
 
 Se incumple en `routers/checkout.py`, porque depende directamente de clases concretas como `TransactionManager`, `StripePaymentGateway`, `InvoiceGenerator` y `NotificationDispatcher`.
 
@@ -73,11 +69,7 @@ S - q1 - q2
 
 Pero el código original puede terminar guardando:
 
-S - q1
-
-o
-
-S - q2
+S - q1 o S - q2
 
 Esto ocurre porque una actualización sobrescribe la otra.
 
